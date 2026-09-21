@@ -1,0 +1,25 @@
+{
+  "passed": 13,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [
+    "Seeded scholarship and conflict records are visibly Prototype/Demo Rule data as specified.",
+    "Document readiness check restores the demo document state after exercising the local toggle."
+  ],
+  "retest_needed": false,
+  "checks": [
+    {"criterion":"Public landing and navigation","name":"public-landing-navigation","lane":"browser","status":"passed","evidence":"Landing showed Vidyadwar hero and Explore scholarships navigated to /scholarships."},
+    {"criterion":"Demo authentication and Aarav profile","name":"demo-auth-aarav-profile","lane":"browser","status":"passed","evidence":"Load Demo Student routed to dashboard showing Aarav, Computer Engineering, 82%, Maharashtra and 2.1 lakh."},
+    {"criterion":"Scholarship discovery and deterministic eligibility","name":"scholarship-discovery-eligibility","lane":"browser","status":"passed","evidence":"Search filtered seeded scholarships; detail showed Why this scholarship matches you and MATCH/ELIGIBLE status."},
+    {"criterion":"Document readiness","name":"document-readiness-toggle","lane":"browser","status":"passed","evidence":"Documents route showed Marksheet and Domicile Certificate and local Mark available flow updated readiness."},
+    {"criterion":"Comparison to conflict graph","name":"compare-conflict-graph-stages","lane":"browser","status":"passed","evidence":"Selected national-stem and maharashtra-support; compatibility view showed Student, Scholarship A/B and lifecycle stages."},
+    {"criterion":"Stage-aware lifecycle analysis","name":"stage-aware-conflict-statuses","lane":"browser","status":"passed","evidence":"Application, Selection, Acceptance, Receiving/Disbursement and Next Academic Year/Re-check displayed with status text."},
+    {"criterion":"Evidence-locked Why explanation","name":"evidence-locked-why-explanation","lane":"browser","status":"passed","evidence":"Conflict view exposed Prototype Rule CR-01, Demo Rule and Date checked evidence."},
+    {"criterion":"Readiness, action plan, official portal, tracking","name":"readiness-action-tracking-official-portal","lane":"browser","status":"passed","evidence":"Readiness, Action plan, Tracking routes loaded and scholarship detail exposed official portal link."},
+    {"criterion":"Demo auth/dashboard API","name":"test_tscheck_auth.py","lane":"backend","status":"passed","evidence":"POST /api/auth/demo 200; GET /api/dashboard 200 with Aarav."},
+    {"criterion":"Scholarships API","name":"test_tscheck_scholarships.py","lane":"backend","status":"passed","evidence":"GET /api/scholarships 200 and GET /api/scholarships/national-stem 200 with conditions."},
+    {"criterion":"Documents/readiness API","name":"test_tscheck_documents.py","lane":"backend","status":"passed","evidence":"GET /api/documents 200 and GET /api/readiness 200 with required document records."},
+    {"criterion":"Conflict analysis API","name":"test_tscheck_conflicts.py","lane":"backend","status":"passed","evidence":"POST /api/conflicts/analyze with scholarship_ids 200; response contained five stages and stage evidence."},
+    {"criterion":"Action plan/tracking API","name":"test_tscheck_tracking.py","lane":"backend","status":"passed","evidence":"GET /api/action-plan 200; GET /api/tracking 200; tracking update accepted."}
+  ]
+}

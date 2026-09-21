@@ -1,0 +1,44 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Create account enters the website",
+      "name": "register-creates-session-dashboard",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Filled unique name/email/password on /register, submitted, navigated to /dashboard; page-heading showed 'Welcome, <registered name>' and sidebar-profile-name/sidebar-profile-label showed the registered name with 'Student profile' (not Aarav Demo)."
+    },
+    {
+      "criterion": "Create account enters the website",
+      "name": "test_tscheck_register.py::test_register_creates_session_and_me_matches",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/auth/register 200 returned user/profile with registered full_name; subsequent GET /api/auth/me 200 (cookie session) returned matching email and profile.full_name, demo_mode falsy."
+    },
+    {
+      "criterion": "Registration validation remains functional",
+      "name": "register-validation-mismatch-then-retry",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Mismatched passwords kept user on /register and showed auth-error-message; corrected confirm-password and resubmitted reached /dashboard with matching Welcome heading and zero console errors captured during the valid retry submission."
+    },
+    {
+      "criterion": "Registration validation remains functional",
+      "name": "test_tscheck_register.py::test_register_rejects_mismatched_passwords",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/auth/register with mismatched password/confirm_password returned 400 with detail 'Passwords do not match'."
+    },
+    {
+      "criterion": "Regression check (existing demo auth flow unaffected)",
+      "name": "demo-auth-aarav-profile",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Re-ran persisted check; Load Demo Student still routes to /dashboard showing Aarav profile, confirming register changes did not break existing auth path."
+    }
+  ]
+}
