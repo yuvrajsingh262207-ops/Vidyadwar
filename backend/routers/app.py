@@ -7,6 +7,7 @@ from fastapi import APIRouter, Cookie, HTTPException, Response
 
 from lib.db import db
 from lib.dates import today_iso
+from lib.catalog import build_catalog
 from models.domain import (
     AuthCredentials,
     AuthResponse,
@@ -38,87 +39,7 @@ def _hash_password(password: str) -> str:
 
 
 def _scholarship_seed() -> list[dict[str, Any]]:
-    checked = today_iso()
-    demo_evidence = lambda source, url, rule, clause: {
-        "source_name": source,
-        "source_url": url,
-        "rule_text": rule,
-        "clause": clause,
-        "date_checked": checked,
-        "verification_status": "Demo Rule",
-    }
-    return [
-        {
-            "id": "national-stem",
-            "name": "National STEM Advancement Scholarship",
-            "short_description": "A prototype STEM support award for high-performing undergraduate learners.",
-            "provider": "Ministry of Education • Prototype Dataset",
-            "rule": {"course": "B.Tech", "minimum_marks": 75, "income_limit": 250000, "state": None, "category": None, "important_condition": "Full-time undergraduate STEM study"},
-            "required_documents": ["Marksheet", "Income Certificate", "Domicile Certificate", "Bank Details"],
-            "deadline": "2026-04-30",
-            "official_source": "Prototype record — verify on the official portal",
-            "official_url": "https://scholarships.gov.in/",
-            "restrictions": "Prototype conflict rule: simultaneous receipt with another maintenance benefit may require review at disbursement.",
-            "evidence": demo_evidence("Prototype dataset • official portal link for verification", "https://scholarships.gov.in/", "Prototype rule: eligible applicants may apply and be selected, while concurrent maintenance benefits should be reviewed before receipt.", "Prototype Rule CR-01"),
-            "conflict_rules": [{"with": "maharashtra-support", "stage": "disbursement", "status": "Conflict", "summary": "Possible overlap in maintenance support at receiving / disbursement.", "why": "Both records describe a maintenance benefit. The prototype rule permits review during application and selection, but flags simultaneous receipt for verification before funds are disbursed."}],
-        },
-        {
-            "id": "maharashtra-support",
-            "name": "Maharashtra Higher Education Support Grant",
-            "short_description": "A prototype state support grant for Maharashtra domiciled students.",
-            "provider": "Government of Maharashtra • Prototype Dataset",
-            "rule": {"course": "Any undergraduate", "minimum_marks": 60, "income_limit": 300000, "state": "Maharashtra", "category": None, "important_condition": "Maharashtra domicile and active undergraduate enrolment"},
-            "required_documents": ["Marksheet", "Income Certificate", "Domicile Certificate", "Bank Details"],
-            "deadline": "2026-05-15",
-            "official_source": "Prototype record — verify on the official portal",
-            "official_url": "https://mahadbt.maharashtra.gov.in/",
-            "restrictions": "Prototype conflict rule: disclose other maintenance support before acceptance and receipt.",
-            "evidence": demo_evidence("Prototype dataset • official portal link for verification", "https://mahadbt.maharashtra.gov.in/", "Prototype rule: other maintenance awards should be disclosed; simultaneous receipt is a review point at disbursement.", "Prototype Rule CR-01"),
-            "conflict_rules": [{"with": "national-stem", "stage": "disbursement", "status": "Conflict", "summary": "Possible overlap in maintenance support at receiving / disbursement.", "why": "Both records describe a maintenance benefit. The prototype rule permits review during application and selection, but flags simultaneous receipt for verification before funds are disbursed."}],
-        },
-        {
-            "id": "future-tech-merit",
-            "name": "Future Tech Merit Fellowship",
-            "short_description": "A prototype merit fellowship for students demonstrating exceptional academic performance.",
-            "provider": "AlgoRush Knowledge Lab • Demo Record",
-            "rule": {"course": "B.Tech", "minimum_marks": 85, "income_limit": 500000, "state": None, "category": None, "important_condition": "Minimum 85% academic performance"},
-            "required_documents": ["Marksheet", "Bank Details"],
-            "deadline": "2026-06-10",
-            "official_source": "Prototype / Demo Rule",
-            "official_url": "https://www.education.gov.in/",
-            "restrictions": "Prototype record. Confirm current terms with the listed authority before acting.",
-            "evidence": demo_evidence("Prototype / Demo Rule", "https://www.education.gov.in/", "Prototype record used to demonstrate a deterministic academic threshold.", "Demo Rule FT-01"),
-            "conflict_rules": [],
-        },
-        {
-            "id": "inclusive-campus",
-            "name": "Inclusive Campus Access Award",
-            "short_description": "A prototype access award for students whose profile may need additional eligibility review.",
-            "provider": "Higher Education Access Network • Demo Record",
-            "rule": {"course": "Any undergraduate", "minimum_marks": 55, "income_limit": 400000, "state": None, "category": "Reserved category or disability", "important_condition": "Reserved category or documented disability status"},
-            "required_documents": ["Marksheet", "Income Certificate", "Category Certificate"],
-            "deadline": "2026-07-01",
-            "official_source": "Prototype / Demo Rule",
-            "official_url": "https://www.education.gov.in/",
-            "restrictions": "The category or disability condition needs document-backed review.",
-            "evidence": demo_evidence("Prototype / Demo Rule", "https://www.education.gov.in/", "Prototype record used to demonstrate a review-required category condition.", "Demo Rule IC-01"),
-            "conflict_rules": [],
-        },
-        {
-            "id": "digital-learning",
-            "name": "Digital Learning Access Grant",
-            "short_description": "A prototype equipment grant supporting undergraduate learning access.",
-            "provider": "Digital Education Mission • Demo Record",
-            "rule": {"course": "Any undergraduate", "minimum_marks": 60, "income_limit": 350000, "state": None, "category": None, "important_condition": "One-time learning support; check other equipment grants"},
-            "required_documents": ["Marksheet", "Income Certificate", "Bank Details"],
-            "deadline": "2026-08-20",
-            "official_source": "Prototype / Demo Rule",
-            "official_url": "https://www.education.gov.in/",
-            "restrictions": "One-time support; check whether another equipment grant has already been received.",
-            "evidence": demo_evidence("Prototype / Demo Rule", "https://www.education.gov.in/", "Prototype record used to demonstrate a one-time benefit restriction.", "Demo Rule DL-01"),
-            "conflict_rules": [],
-        },
-    ]
+    return build_catalog(today_iso())
 
 
 async def ensure_demo_data() -> None:
@@ -127,7 +48,7 @@ async def ensure_demo_data() -> None:
 
     demo_user = {"id": "demo-aarav", "full_name": "Aarav", "email": DEMO_EMAIL, "password_hash": _hash_password("demo123")}
     await db.users.update_one({"id": demo_user["id"]}, {"$set": demo_user}, upsert=True)
-    profile = Profile(user_id=demo_user["id"])
+    profile = Profile(user_id=demo_user["id"], full_name="Aarav", course="B.Tech", branch="Computer Engineering", year="2nd Year", marks=82, state="Maharashtra", category="Open", annual_income=210000, income_certificate=True)
     await db.profiles.update_one({"user_id": demo_user["id"]}, {"$setOnInsert": profile.model_dump()}, upsert=True)
     docs = [
         {"id": "doc-marksheet", "name": "Marksheet", "type": "Academic", "available": True, "required_for": ["national-stem", "maharashtra-support", "future-tech-merit", "inclusive-campus", "digital-learning"], "extracted_value": "82% • B.Tech Computer Engineering", "extraction_status": "Verified"},
@@ -164,7 +85,6 @@ async def _profile(session: str | None) -> tuple[dict, Profile]:
 
 
 async def _all_scholarships() -> list[Scholarship]:
-    await ensure_demo_data()
     records = await db.scholarships.find().to_list(100)
     return [Scholarship(**record) for record in records]
 
@@ -197,13 +117,20 @@ def _condition_status(condition: str, profile: Profile, required: str, value: st
 async def _eligibility(scholarship: Scholarship, profile: Profile, documents: list[StudentDocument]) -> EligibilityResult:
     rule = scholarship.rule
     conditions: list[Condition] = []
-    for key, label, required, value in [
-        ("course", "Course", rule.course, profile.course),
-        ("marks", "Academic requirement", str(rule.minimum_marks), f"{profile.marks:g}%"),
-        ("income", "Family income", str(rule.income_limit), f"₹{profile.annual_income:,.0f}"),
-    ]:
-        status, explanation = _condition_status(key, profile, required, value)
-        conditions.append(Condition(key=key, label=label, required=required if key != "marks" else f"Minimum {required}%" if key == "marks" else required, status=status, student_value=value, explanation=explanation))
+    if not rule.details_verified:
+        conditions.append(Condition(key="official-verification", label="Official eligibility details", required="Verify on the official source", status="REVIEW", student_value="Profile saved", explanation="Eligibility details require official verification. Vidyadwar does not infer missing criteria."))
+    else:
+        structured_conditions = []
+        if rule.course is not None:
+            structured_conditions.append(("course", "Course", rule.course, profile.course or "Not provided"))
+        if rule.minimum_marks is not None:
+            structured_conditions.append(("marks", "Academic requirement", str(rule.minimum_marks), f"{profile.marks:g}%"))
+        if rule.income_limit is not None:
+            structured_conditions.append(("income", "Family income", str(rule.income_limit), f"₹{profile.annual_income:,.0f}"))
+        for key, label, required, value in structured_conditions:
+            status, explanation = _condition_status(key, profile, required, value)
+            required_text = f"Minimum {required}%" if key == "marks" else required
+            conditions.append(Condition(key=key, label=label, required=required_text, status=status, student_value=value, explanation=explanation))
     if rule.state:
         status, explanation = _condition_status("state", profile, rule.state, profile.state)
         conditions.append(Condition(key="state", label="State / domicile", required=rule.state, status=status, student_value=profile.state, explanation=explanation))
@@ -225,7 +152,6 @@ async def _eligibility(scholarship: Scholarship, profile: Profile, documents: li
 
 @router.post("/auth/demo", response_model=AuthResponse)
 async def demo_login(response: Response):
-    await ensure_demo_data()
     user = await db.users.find_one({"email": DEMO_EMAIL})
     token = secrets.token_urlsafe(32)
     await db.sessions.insert_one({"token": token, "user_id": user["id"], "created_at": datetime.now(timezone.utc)})
@@ -286,7 +212,8 @@ async def get_profile(vidyadwar_session: str | None = Cookie(default=None)):
 async def update_profile(payload: ProfileUpdate, vidyadwar_session: str | None = Cookie(default=None)):
     user, _ = await _profile(vidyadwar_session)
     updated = Profile(user_id=user["id"], **payload.model_dump())
-    await db.profiles.update_one({"user_id": user["id"]}, {"$set": updated.model_dump()})
+    await db.profiles.update_one({"user_id": user["id"]}, {"$set": updated.model_dump()}, upsert=True)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"full_name": updated.full_name}})
     return updated
 
 
@@ -295,7 +222,6 @@ async def scholarships(vidyadwar_session: str | None = Cookie(default=None)):
     if vidyadwar_session:
         _, profile = await _profile(vidyadwar_session)
     else:
-        await ensure_demo_data()
         profile = Profile(**(await db.profiles.find_one({"user_id": "demo-aarav"})))
     docs = await _documents(profile.user_id)
     return [await _eligibility(item, profile, docs) for item in await _all_scholarships()]
@@ -306,7 +232,6 @@ async def scholarship_detail(scholarship_id: str, vidyadwar_session: str | None 
     if vidyadwar_session:
         _, profile = await _profile(vidyadwar_session)
     else:
-        await ensure_demo_data()
         profile = Profile(**(await db.profiles.find_one({"user_id": "demo-aarav"})))
     item = await db.scholarships.find_one({"id": scholarship_id})
     if not item:

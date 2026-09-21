@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import Landing from "@/pages/Landing";
 import Auth from "@/pages/Auth";
-import { ActionPlanPage, ComparePage, ConflictPage, DashboardPage, DocumentsPage, ProfilePage, PublicInfoPage, ReadinessPage, ScholarshipDetailPage, ScholarshipsPage, SettingsPage, TrackingPage } from "@/pages/Workspace";
+import { ActionPlanPage, ComparePage, ConflictPage, DashboardPage, DocumentsPage, PublicInfoPage, ReadinessPage, SettingsPage, TrackingPage } from "@/pages/Workspace";
+import ProfileEditor from "@/pages/ProfileEditor";
+import ScholarshipDirectory, { ScholarshipRecordPage } from "@/pages/ScholarshipDirectory";
 
 // One <Route> per page in src/pages; BrowserRouter already wraps this in main.tsx.
 export default function App() {
@@ -14,8 +16,8 @@ export default function App() {
       <Route path="/privacy" element={<PublicInfoPage kind="privacy" />} />
       <Route path="/terms" element={<PublicInfoPage kind="terms" />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/scholarships" element={<ScholarshipsPage />} />
-      <Route path="/scholarships/:id" element={<ScholarshipDetailPage />} />
+      <Route path="/scholarships" element={<ScholarshipDirectory />} />
+      <Route path="/scholarships/:id" element={<ScholarshipRecordPage />} />
       <Route path="/compare" element={<ComparePage />} />
       <Route path="/conflicts" element={<ConflictPage />} />
       <Route path="/conflicts/:id" element={<ConflictPage />} />
@@ -23,7 +25,7 @@ export default function App() {
       <Route path="/readiness" element={<ReadinessPage />} />
       <Route path="/action-plan" element={<ActionPlanPage />} />
       <Route path="/tracking" element={<TrackingPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/profile" element={<ProfileEditor />} />
       <Route path="/settings" element={<SettingsPage />} />
     </Routes>
   );

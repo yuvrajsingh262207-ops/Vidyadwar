@@ -13,7 +13,7 @@ const navItems = [
   ["/dashboard", "Dashboard", LayoutDashboard], ["/scholarships", "Scholarships", GraduationCap], ["/compare", "Compare", GitBranch], ["/conflicts", "Conflicts", CircleAlert], ["/documents", "Documents", FileText], ["/readiness", "Readiness", ClipboardCheck], ["/action-plan", "Action plan", Target], ["/tracking", "Tracking", Zap], ["/profile", "Profile", UserRound], ["/settings", "Settings", Settings2],
 ] as const;
 
-const money = (value: number) => `₹${(value / 100000).toFixed(1)} lakh`;
+const money = (value: number | null | undefined) => value == null ? "Verify official source" : `₹${(value / 100000).toFixed(1)} lakh`;
 const statusCopy: Record<string, string> = { ELIGIBLE: "Eligible", REVIEW: "Review", NOT_ELIGIBLE: "Not eligible" };
 
 export function Workspace({ view, children }: { view: string; children?: ReactNode }) {

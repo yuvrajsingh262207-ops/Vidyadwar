@@ -26,17 +26,17 @@ class RegisterRequest(AuthCredentials):
 
 class Profile(BaseModel):
     user_id: str
-    full_name: str = "Aarav"
-    course: str = "B.Tech"
-    branch: str = "Computer Engineering"
-    year: str = "2nd Year"
-    marks: float = 82
-    state: str = "Maharashtra"
-    category: str = "Open"
+    full_name: str = "Student"
+    course: str = ""
+    branch: str = ""
+    year: str = ""
+    marks: float = 0
+    state: str = ""
+    category: str = "Not specified"
     gender: str = "Prefer not to say"
     disability_status: str = "No"
-    annual_income: float = 210000
-    income_certificate: bool = True
+    annual_income: float = 0
+    income_certificate: bool = False
     receiving_scholarship: bool = False
     receiving_stipend: bool = False
     other_benefit: bool = False
@@ -78,12 +78,13 @@ class Evidence(BaseModel):
 
 
 class ScholarshipRule(BaseModel):
-    course: str
-    minimum_marks: float
-    income_limit: float
+    course: str | None = None
+    minimum_marks: float | None = None
+    income_limit: float | None = None
     state: str | None = None
     category: str | None = None
     important_condition: str
+    details_verified: bool = False
 
 
 class Scholarship(BaseModel):
@@ -91,11 +92,26 @@ class Scholarship(BaseModel):
     name: str
     short_description: str
     provider: str
+    category: str
+    course: str
+    education_level: str
+    state: str
+    eligibility_summary: str
+    income_criteria: str
+    academic_criteria: str
+    benefit: str
+    portal: str
+    source_type: str
     rule: ScholarshipRule
     required_documents: list[str]
     deadline: str
     official_source: str
+    official_source_url: str
     official_url: str
+    discovery_source: str | None = None
+    last_verified_date: str
+    data_status: Literal["Verified Official", "Prototype", "Needs Review"]
+    keywords: list[str] = Field(default_factory=list)
     restrictions: str
     evidence: Evidence
     conflict_rules: list[dict]

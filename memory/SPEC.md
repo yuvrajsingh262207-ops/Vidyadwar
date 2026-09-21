@@ -9,3 +9,7 @@ The backend persists users, profiles, scholarships, student document availabilit
 Authentication is local demo authentication with an httpOnly session cookie. Demo Mode uses the seeded Aarav account; register/login are also functional. There is no admin area and no external AI dependency.
 
 Newly registered accounts enter the dashboard immediately, and the workspace identity reflects the registered profile rather than the demo student.
+
+Profile edits persist per authenticated user in MongoDB. A successful save invalidates profile, dashboard, scholarship, conflict, readiness, and session caches so the saved profile becomes the immediate source of truth. Demo Mode remains isolated under the `demo-aarav` user id.
+
+The scholarship knowledge catalog contains 30+ source-first records across NSP, AICTE, UGC, government ministries, MahaDBT, selected state portals, university aid, corporate providers, discovery metadata, and clearly labeled prototype records. Each record stores provider, portal, source type, official/discovery URLs, category, course, education level, state, deadline, benefit, verification date, status, and keywords. Where detailed criteria are not stored, deterministic eligibility returns Review with “Eligibility details require official verification.”

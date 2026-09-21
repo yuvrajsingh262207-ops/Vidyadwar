@@ -1,0 +1,107 @@
+{
+  "passed": 14,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Profile single-field persistence",
+      "name": "profile-single-field-persistence",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Registered a fresh non-demo account, changed only state on /profile, saved, saw 'Profile saved successfully.', reloaded and confirmed state field retained the new value; account labeled Personal profile."
+    },
+    {
+      "criterion": "Profile multi-field persistence and data isolation",
+      "name": "profile-multi-field-persistence-and-isolation",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Changed name, course, year, marks, state, income in one submission on a new account; save success shown once; reload confirmed all six values persisted; then logged out and Load Demo Student still showed Aarav, confirming isolation."
+    },
+    {
+      "criterion": "Profile multi-field persistence and data isolation (API)",
+      "name": "test_tscheck_profile_persistence.py::test_profile_multi_field_persists_and_drives_matching_and_isolated_from_demo",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "PUT /api/profile with course=B.Tech/year/marks/state/income 200; GET /api/profile afterward returned identical saved values (not just echoed response); separate demo login (aarav.demo@vidyadwar.app) GET /api/profile still returned Aarav/82/Maharashtra untouched."
+    },
+    {
+      "criterion": "Profile survives logout/login and drives dashboard",
+      "name": "profile-survives-logout-login-drives-dashboard",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Saved updated name/course/year/income on a registered account, logged out, logged back in with same credentials; Dashboard page-heading and sidebar-profile-name showed the updated name and Profile fields retained course/year/income."
+    },
+    {
+      "criterion": "Profile drives deterministic matching",
+      "name": "profile-drives-deterministic-matching",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "With course=B.Tech/marks=91/income=150000, national-stem course/marks/income conditions rendered emerald MATCH styling; after changing to course=BA/marks=40, the same conditions recalculated to rose FAIL styling with updated explanation text; aicte-pragati kept Verified Official + Review regardless."
+    },
+    {
+      "criterion": "Profile drives deterministic matching (API)",
+      "name": "test_tscheck_profile_persistence.py (shared with multi-field test)",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "After PUT /api/profile with course=B.Tech/marks=91/income=150000, GET /api/scholarships/national-stem returned course/marks/income conditions all status=MATCH, recalculated from the saved profile."
+    },
+    {
+      "criterion": "Broad scholarship catalog and keyword search",
+      "name": "scholarship-catalog-keyword-search",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Explorer showed 32 of 32 catalog records; searches for Pragati, NSP, MahaDBT, AICTE, engineering, computer, girl, SC, private and partial 'Prag' each returned >=1 result; reset restored the search box to empty."
+    },
+    {
+      "criterion": "Broad scholarship catalog and keyword search (API)",
+      "name": "test_tscheck_catalog_scale.py::test_catalog_has_at_least_25_records_across_expected_sources",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "GET /api/scholarships returned 32 records; source_type set included AICTE, MahaDBT, State Government, Prototype; aicte-pragati found with data_status=Verified Official and overall_status=REVIEW."
+    },
+    {
+      "criterion": "Source, state, and status filters",
+      "name": "scholarship-source-state-status-filters",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Source=AICTE, State=Maharashtra, and Status=REVIEW filters each narrowed the '32 of 32' baseline to a smaller nonzero count with the expected scholarship card visible; Reset restored 32 of 32 and all three selects to All."
+    },
+    {
+      "criterion": "Source-first card and detail metadata",
+      "name": "scholarship-source-first-card-and-detail-metadata",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "aicte-pragati card showed AICTE source badge, Verified Official data badge, Official source/Portal/Last verified lines; detail page showed matching data badge, official portal link, and official source link; a Discovery Platform-filtered card showed 'Found via discovery platform:' text distinct from the official authority."
+    },
+    {
+      "criterion": "Core conflict demo regression",
+      "name": "demo-auth-aarav-profile",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Re-ran persisted check; Load Demo Student still routes to /dashboard showing Aarav / Computer Engineering / 82% / Maharashtra / 2.1 lakh."
+    },
+    {
+      "criterion": "Core conflict demo regression",
+      "name": "compare-conflict-graph-stages",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Fixed a selector collision (new catalog record name 'Uttar Pradesh Scholarship and...' matched the old /Scholarship A/i text regex) by switching to conflict-scholarship-a-node/conflict-scholarship-b-node/conflict-student-node testids; national-stem vs maharashtra-support comparison still reaches the conflict graph with all lifecycle stage testids visible."
+    },
+    {
+      "criterion": "Core conflict demo regression",
+      "name": "stage-aware-conflict-statuses",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Re-ran persisted check; all five lifecycle stages (Application, Selection, Acceptance, Receiving/Disbursement, Next Academic Year/Re-check) rendered with status text."
+    },
+    {
+      "criterion": "Core conflict demo regression",
+      "name": "evidence-locked-why-explanation",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Re-ran persisted check; conflict view still exposes Prototype Rule CR-01, Demo Rule, and date-checked evidence panel."
+    }
+  ]
+}
