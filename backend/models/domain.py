@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Literal
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, model_validator
 import uuid
 
 
@@ -31,6 +31,10 @@ class Profile(BaseModel):
     branch: str = ""
     year: str = ""
     marks: float = 0
+    education_level: Literal["Class 10", "Class 12", "Diploma", "Undergraduate Degree", "Postgraduate Degree", "Other"] = "Undergraduate Degree"
+    score_type: Literal["Percentage", "Grade", "SGPA", "CGPA"] = "Percentage"
+    score_value: str = ""
+    score_scale: str = "100"
     state: str = ""
     category: str = "Not specified"
     gender: str = "Prefer not to say"
@@ -41,6 +45,12 @@ class Profile(BaseModel):
     receiving_stipend: bool = False
     other_benefit: bool = False
 
+    @model_validator(mode="after")
+    def fill_legacy_score(self):
+        if not self.score_value:
+            self.score_value = f"{self.marks:g}"
+        return self
+
 
 class ProfileUpdate(BaseModel):
     full_name: str = Field(min_length=2, max_length=80)
@@ -48,6 +58,10 @@ class ProfileUpdate(BaseModel):
     branch: str
     year: str
     marks: float = Field(ge=0, le=100)
+    education_level: Literal["Class 10", "Class 12", "Diploma", "Undergraduate Degree", "Postgraduate Degree", "Other"] = "Undergraduate Degree"
+    score_type: Literal["Percentage", "Grade", "SGPA", "CGPA"] = "Percentage"
+    score_value: str = ""
+    score_scale: str = "100"
     state: str
     category: str
     gender: str
@@ -85,6 +99,7 @@ class ScholarshipRule(BaseModel):
     category: str | None = None
     important_condition: str
     details_verified: bool = False
+    academic_score_type: str = "Percentage"
 
 
 class Scholarship(BaseModel):

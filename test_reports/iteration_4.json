@@ -1,0 +1,79 @@
+{
+  "passed": 10,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Class 10 and Class 12 score choices",
+      "name": "profile-class-scores-grade-percentage",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Registered fresh account; selecting Class 10 limited Academic score type to [Percentage, Grade]; chose Grade, guidance text 'Letter grades are stored as entered...' shown, entered 'A1', saved -> 'Profile saved successfully.'; page reload retained education_level=Class 10, score_type=Grade, score_value=A1; switching to Class 12 kept the same [Percentage, Grade] option set."
+    },
+    {
+      "criterion": "Class 10 and Class 12 score choices (API)",
+      "name": "test_tscheck_education_score_fields.py::test_class10_grade_score_persists",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "PUT /api/profile with education_level=Class 10, score_type=Grade, score_value=A1 -> 200 with saved values echoed; GET /api/profile afterward returned identical education_level/score_type/score_value confirming persistence, not just echo."
+    },
+    {
+      "criterion": "Diploma and degree score choices",
+      "name": "profile-diploma-degree-cgpa-scale-options",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "For each of Diploma, Undergraduate Degree, Postgraduate Degree, Other, the score type select offered exactly [Percentage, SGPA, CGPA]; set CGPA=8.6 on 10-point scale then SGPA=3.7 on 4-point scale, both decimal values saved and, after reload, score_type/score_value/score_scale all persisted correctly."
+    },
+    {
+      "criterion": "Academic score persistence and dashboard display",
+      "name": "cgpa-profile-persists-and-dashboard-displays",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Saved Undergraduate Degree / CGPA 8.6 on 10-point scale; page reload retained score_value=8.6 and score_scale=10; Dashboard 'dashboard-academic-score' showed '8.6 CGPA / 10' (no 'percentage' text, no '8.6%'); after logout and re-login with same credentials the dashboard still showed '8.6 CGPA / 10'."
+    },
+    {
+      "criterion": "No unsafe CGPA conversion",
+      "name": "cgpa-profile-review-no-conversion-national-stem",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Profile set to CGPA 9.2 / scale 10, course B.Tech, income 150000. On the National STEM (percentage rule, min 75%) detail page, the marks condition rendered amber (Review) styling (not emerald/rose) and its explanation text contained 'no official conversion formula is recorded' with no numeric conversion phrase present."
+    },
+    {
+      "criterion": "No unsafe CGPA conversion (API)",
+      "name": "test_tscheck_education_score_fields.py::test_cgpa_profile_against_percentage_rule_returns_review_without_conversion",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "PUT /api/profile with score_type=CGPA, score_value=9.2, scale=10, course=B.Tech, income=150000 -> 200; GET /api/scholarships/national-stem returned conditions.marks.status=REVIEW with explanation containing 'no official conversion formula is recorded' and no 'converted to' phrase."
+    },
+    {
+      "criterion": "Academic score persistence and dashboard display (API, CGPA relogin)",
+      "name": "test_tscheck_education_score_fields.py::test_degree_cgpa_10point_scale_persists_and_survives_relogin",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "PUT /api/profile with education_level=Undergraduate Degree, score_type=CGPA, score_value=8.6, score_scale=10 -> 200; fresh httpx client + POST /api/auth/login (simulating logout/login) then GET /api/profile returned score_type=CGPA, score_value=8.6, score_scale=10 unchanged."
+    },
+    {
+      "criterion": "Percentage matching regression",
+      "name": "profile-drives-deterministic-matching",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Updated persisted check (old 'profile-marks-input' testid was removed by the score_type refactor, replaced with 'profile-score-value-input' under default Percentage score type). With course=B.Tech/score_value=91/income=150000 the national-stem course/marks/income conditions rendered emerald MATCH; changing to course=BA/score_value=40 recalculated to rose FAIL with 'Your percentage is 40%...' explanation; aicte-pragati kept Verified Official + Review regardless."
+    },
+    {
+      "criterion": "Percentage matching regression (Aarav demo)",
+      "name": "demo-auth-aarav-profile",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Re-ran persisted check; Load Demo Student still routes to /dashboard showing Aarav / Computer Engineering / 82% / Maharashtra / 2.1 lakh, confirming the original conflict journey and 82 Percentage default are intact."
+    },
+    {
+      "criterion": "Percentage matching regression (API, full suite)",
+      "name": "backend full suite (12 tests across test_tscheck_*.py)",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "cd /app/backend && python -m pytest -q -p no:cacheprovider -> '12 passed'. Updated test_tscheck_profile_persistence.py::test_profile_multi_field_persists_and_drives_matching_and_isolated_from_demo to also set score_value alongside marks, since marks is now derived from score_value for Percentage profiles per the new contract (was previously failing: saved marks=0.0 instead of 91 because score_value, not the raw marks field, now drives the derived percentage)."
+    }
+  ]
+}

@@ -99,8 +99,14 @@ def _condition_status(condition: str, profile: Profile, required: str, value: st
         ok = profile.course.lower() == required.lower() or required.lower().startswith("any ")
         return ("MATCH" if ok else "FAIL", f"Your course is {profile.course}; this record requires {required}.")
     if condition == "marks":
-        ok = profile.marks >= float(required)
-        return ("MATCH" if ok else "FAIL", f"Your marks are {profile.marks:g}%; the minimum is {required}%.")
+        if profile.score_type != "Percentage":
+            return "REVIEW", f"Your {profile.score_type} is {profile.score_value} on a {profile.score_scale}-point scale. This rule is stored as a percentage, and no official conversion formula is recorded."
+        try:
+            score = float(profile.score_value)
+        except ValueError:
+            return "NOT_AVAILABLE", "Enter a valid percentage to evaluate this academic condition."
+        ok = score >= float(required)
+        return ("MATCH" if ok else "FAIL", f"Your percentage is {score:g}%; the minimum is {required}%.")
     if condition == "income":
         ok = profile.annual_income <= float(required)
         return ("MATCH" if ok else "FAIL", f"Your annual income is ₹{profile.annual_income:,.0f}; the limit is ₹{float(required):,.0f}.")
@@ -124,7 +130,8 @@ async def _eligibility(scholarship: Scholarship, profile: Profile, documents: li
         if rule.course is not None:
             structured_conditions.append(("course", "Course", rule.course, profile.course or "Not provided"))
         if rule.minimum_marks is not None:
-            structured_conditions.append(("marks", "Academic requirement", str(rule.minimum_marks), f"{profile.marks:g}%"))
+            score_display = f"{profile.score_value}%" if profile.score_type == "Percentage" else f"{profile.score_value} {profile.score_type} (scale {profile.score_scale})"
+            structured_conditions.append(("marks", "Academic requirement", str(rule.minimum_marks), score_display))
         if rule.income_limit is not None:
             structured_conditions.append(("income", "Family income", str(rule.income_limit), f"₹{profile.annual_income:,.0f}"))
         for key, label, required, value in structured_conditions:
@@ -211,7 +218,15 @@ async def get_profile(vidyadwar_session: str | None = Cookie(default=None)):
 @router.put("/profile", response_model=Profile)
 async def update_profile(payload: ProfileUpdate, vidyadwar_session: str | None = Cookie(default=None)):
     user, _ = await _profile(vidyadwar_session)
-    updated = Profile(user_id=user["id"], **payload.model_dump())
+    profile_data = payload.model_dump()
+    if not payload.score_value:
+        profile_data["score_value"] = f"{payload.marks:g}"
+    if payload.score_type == "Percentage":
+        try:
+            profile_data["marks"] = float(profile_data["score_value"])
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Enter a valid percentage")
+    updated = Profile(user_id=user["id"], **profile_data)
     await db.profiles.update_one({"user_id": user["id"]}, {"$set": updated.model_dump()}, upsert=True)
     await db.users.update_one({"id": user["id"]}, {"$set": {"full_name": updated.full_name}})
     return updated

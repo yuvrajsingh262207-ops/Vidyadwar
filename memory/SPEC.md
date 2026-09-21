@@ -13,3 +13,7 @@ Newly registered accounts enter the dashboard immediately, and the workspace ide
 Profile edits persist per authenticated user in MongoDB. A successful save invalidates profile, dashboard, scholarship, conflict, readiness, and session caches so the saved profile becomes the immediate source of truth. Demo Mode remains isolated under the `demo-aarav` user id.
 
 The scholarship knowledge catalog contains 30+ source-first records across NSP, AICTE, UGC, government ministries, MahaDBT, selected state portals, university aid, corporate providers, discovery metadata, and clearly labeled prototype records. Each record stores provider, portal, source type, official/discovery URLs, category, course, education level, state, deadline, benefit, verification date, status, and keywords. Where detailed criteria are not stored, deterministic eligibility returns Review with “Eligibility details require official verification.”
+
+Academic profiles store education level plus score type/value/scale. Class 10 and 12 offer Percentage or Grade; diploma, undergraduate, postgraduate, and other higher-education profiles offer Percentage, SGPA, or CGPA. Percentage rules are evaluated directly only for Percentage profiles. CGPA, SGPA, and Grade profiles return Review for percentage-based rules unless a future official conversion rule is attached; Vidyadwar never assumes a universal conversion.
+
+The dashboard displays the saved score using its real type and scale (for example, `8.6 CGPA / 10`) rather than relabeling it as a percentage.

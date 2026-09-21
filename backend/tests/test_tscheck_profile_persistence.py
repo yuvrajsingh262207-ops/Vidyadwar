@@ -34,6 +34,7 @@ def test_profile_multi_field_persists_and_drives_matching_and_isolated_from_demo
             "course": "B.Tech",
             "year": "3rd Year",
             "marks": 91,
+            "score_value": "91",
             "state": "Maharashtra",
             "annual_income": 150000,
             "category": profile["category"],
