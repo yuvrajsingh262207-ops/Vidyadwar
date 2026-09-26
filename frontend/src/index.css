@@ -145,3 +145,23 @@
 
 button, a, input, select { transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
 .animate-soft-rise { animation: soft-rise 420ms ease-out both; }
+
+[data-testid="conflict-stage-why"] {
+  margin-top: 1.25rem;
+  border: 1px solid oklch(0.88 0.08 75);
+  border-radius: 0.75rem;
+  background: oklch(0.98 0.025 85);
+  padding: 1rem;
+  color: oklch(0.32 0.07 65);
+  line-height: 1.5rem;
+}
+
+[data-testid="conflict-stage-why"]::before {
+  content: "Why this status?";
+  display: block;
+  margin-bottom: 0.5rem;
+  color: oklch(0.4 0.08 65);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}

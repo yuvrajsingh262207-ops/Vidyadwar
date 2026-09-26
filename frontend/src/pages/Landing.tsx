@@ -34,7 +34,7 @@ export default function Landing() {
           <div className="absolute -left-32 top-6 h-72 w-72 rounded-full bg-teal-200/30 blur-3xl" />
           <div className="relative">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-teal-800"><Sparkles className="size-3.5" /> CODEX 2026 · AlgoRush</div>
-            <h1 data-testid="landing-hero-heading" className="max-w-3xl font-heading text-5xl font-extrabold leading-[.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">Find. Understand.<br /><span className="text-teal-700">Check. Decide. Apply.</span></h1>
+            <h1 data-testid="landing-hero-heading" className="max-w-3xl font-heading text-4xl font-extrabold leading-[.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">Find. Understand.<br /><span className="text-teal-700">Check. Decide. Apply.</span></h1>
             <p data-testid="landing-hero-description" className="mt-7 max-w-xl text-lg leading-8 text-slate-600">Understand scholarship eligibility, documents, and possible scholarship conflicts before making an application decision.</p>
             <p className="mt-4 max-w-xl text-sm leading-6 text-slate-500">Vidyadwar is a decision-support layer around scholarship information — not a replacement for official scholarship authorities.</p>
             <div className="mt-9 flex flex-wrap gap-3">
